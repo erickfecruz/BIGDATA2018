@@ -1,7 +1,8 @@
 
+-- Autor: Erick Fernandes da Cruz
+
 module Main where
 
--- |'main' executa programa principal
 main :: IO ()
 main = do
   print ("PRIMEIRA OPERACAO")
