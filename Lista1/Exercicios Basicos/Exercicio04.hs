@@ -5,13 +5,13 @@ module Main where
 
 main :: IO ()
 main = do
-  print ("num3 aplicado em 3")
+  print ("num35 aplicado em 3")
   print (num35 3)
-  print ("num3 aplicado em 5")
+  print ("num35 aplicado em 5")
   print (num35 5)
-  print ("num3 aplicado em 15")
+  print ("num35 aplicado em 15")
   print (num35 15)
-  print ("num3 aplicado em 30")
+  print ("num35 aplicado em 30")
   print (num35 30)
 
 num5 :: Int -> Bool
