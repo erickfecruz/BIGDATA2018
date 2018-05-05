@@ -50,8 +50,8 @@ freqxyPar xys = M.fromList $ freqPar $ ixy
 --Função ‘tamanho total de cada chave’ ainda não desenvolvida
 entropiaAtributos :: ChunksOf [Point] -> M.Map Integer Double
 entropiaAtributos x = mapReduceByKey(\((a,b),x) -> ((a),x))) (+) primeiraEtapa
-	where
-		primeiraEtapa = mapReduceByKey (\((a,b,c),x) -> ((a,b),	((‘tamanho total de cada chave’)/(length   dataset)) * entropia x (‘tamanho total de cada chave’))) (+) x
+  where
+    primeiraEtapa = mapReduceByKey (\((a,b,c),x) -> ((a,b),	((‘tamanho total de cada chave’)/(length   dataset)) * entropia x (‘tamanho total de cada chave’))) (+) x
 
 ganhoPorAtributo :: ChunksOf [Point] -> M.Map Integer Double
 ganhoPorAtributo y = parMap(\a,x) -> (a,entropiaClasse - x) y
