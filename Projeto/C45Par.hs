@@ -5,7 +5,7 @@ Autor     : Erick Fernandes da Cruz, 2018
 Email     : erickfecruz@hotmail.com
 -}
 
-module C45 where
+module C45Par where
 
 import Control.Parallel.Strategies
 import Data.List
@@ -24,19 +24,18 @@ data DecisionTree = Raiz Integer [(DecisionTree)]
 type Point = ([String], String)
 type Dict = [[String]]
 
-c45 :: ChunksOf [Point] -> Dict -> DecisionTree
-c45 train dict = arvoreDecisao
+c45Par :: ChunksOf [Point] -> Dict -> DecisionTree
+c45Par train dict = arvoreDecisao
   where
     arvoreDecisao = Raiz (atributoGanhoMaior train) (retornaListaArvoreRec (atributoGanhoMaior train) train dict)
 
-parseFile :: String -> ([Point], Dict, [String])
-parseFile file = (dataset, dict, klass)
+parseFile :: String -> ([Point], Dict)
+parseFile file = (dataset, dict)
   where
     dataset     = map parseLine (lines file)
     parseLine l = splitN (words l) 
     splitN  l   = (init l, last l)
     dict        = map nub $ transpose $ map fst dataset 
-    klass       = nub $ map snd dataset
 
 entropia :: Double -> Double -> Double 
 entropia 0 _ = 0
@@ -74,17 +73,17 @@ dictLenghtAtributos frequencia = M.fromList $ lista
   where
     lista = combine (+) $ map (\((a,b,c),x) -> ((a,b),x)) frequencia 
 
-ganhoPorAtributo :: ChunksOf [Point] -> M.Map Double Integer
-ganhoPorAtributo y = M.fromList $ combine (+) $ map (\((a,b),x) -> (((entropiaClasse y) + x),a)) $ entropiaAtributos y
+ganhoPorAtributo :: ChunksOf [Point] -> [(Integer,Double)]
+ganhoPorAtributo y = combine (+) $ map (\((a,b),x) -> (a,((entropiaClasse y) + x))) $ entropiaAtributos y
     
 atributoGanhoMaior :: ChunksOf [Point] -> Integer
-atributoGanhoMaior x = snd $ M.findMax $ ganhoPorAtributo x 
+atributoGanhoMaior x = snd $ M.findMax $ M.fromList $ map (\(a,b) -> (b,a)) $ ganhoPorAtributo x 
   
 retornaListaArvoreRec :: Integer -> ChunksOf [Point] -> Dict -> [DecisionTree]
 retornaListaArvoreRec a b c =
   if (entropiaClasse b) == 0
-    then [Folha "oi"]
-    else map (\x -> (No x (atributoGanhoMaior $ filtrarChunk b x) (retornaListaArvoreRec (atributoGanhoMaior $ filtrarChunk b x) (filtrarChunk b x) c))) $ c!!(fromIntegral a)
+    then [Folha (snd $ b!!1!!1)]
+    else map (\x -> (No x (atributoGanhoMaior $ filtrarChunk b a x) (retornaListaArvoreRec (atributoGanhoMaior $ filtrarChunk b a x) (filtrarChunk b a x) c))) $ c!!(fromIntegral a)
 
-filtrarChunk :: ChunksOf [Point] -> String -> ChunksOf [Point]
-filtrarChunk a b = chunksOf 1000 $ (filter (\x -> Nothing /= (find (==b) $ fst x)) $ concat $ map (\x -> x) a)
+filtrarChunk :: ChunksOf [Point] -> Integer -> String -> ChunksOf [Point]
+filtrarChunk a c b = chunksOf 1000 $ (filter (\x -> b == (fst x)!!(fromIntegral c)) $ concat $ map (\x -> x) a)

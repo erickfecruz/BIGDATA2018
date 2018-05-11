@@ -14,6 +14,7 @@ module Main where
 
 import System.IO
 import System.Environment
+import Control.Exception
 import Formatting
 import Formatting.Clock
 import System.Clock
@@ -28,17 +29,13 @@ main :: IO ()
 main = do
     args <- getArgs
     fileTrain <- readFile (args !! 0)
-    fileTest <- readFile (args !! 1)
-    let (train, dict, klass) = parseFile fileTrain
-        (test,_,_) = parseFile fileTest
+    let (train, dict) = parseFile fileTrain
         chunks = chunksOf nchunks train
     
     start <- getTime Monotonic 
-    let tree = c45Par chunks test dict
+    let tree = c45Par chunks dict
     print (tree)
 
     stop <- getTime Monotonic
     fprint (timeSpecs % "\n") start stop
     return ()
-
-
